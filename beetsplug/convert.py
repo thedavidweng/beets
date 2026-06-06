@@ -728,5 +728,4 @@ class ConvertPlugin(BeetsPlugin):
         defined in threads
         """
         convert = [self.convert_item(keep_new) for _ in range(self.threads)]
-        pipe = util.pipeline.Pipeline([iter(items), convert])
-        pipe.run_parallel()
+        util.pipeline.Pipeline([iter(items), convert]).run_parallel()

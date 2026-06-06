@@ -172,16 +172,7 @@ class FormattedMapping(Mapping[str, str]):
         return value
 
 
-# NOTE: This seems like it should be a `Mapping`, i.e.
-# ```
-# class LazyConvertDict(Mapping[str, Any])
-# ```
-# but there are some conflicts with the `Mapping` protocol such that we
-# can't do this without changing behaviour: In particular, iterators returned
-# by some methods build intermediate lists, such that modification of the
-# `LazyConvertDict` becomes safe during iteration. Some code does in fact rely
-# on this.
-class LazyConvertDict:
+class LazyConvertDict(Mapping[str, Any]):
     """Lazily convert types for attributes fetched from the database"""
 
     def __init__(self, model_cls: Model):
@@ -222,9 +213,9 @@ class LazyConvertDict:
         if key in self._data:
             del self._data[key]
 
-    def keys(self) -> list[str]:
+    def keys(self) -> KeysView[str]:
         """Get a list of available field names for this object."""
-        return list(self._converted.keys()) + list(self._data.keys())
+        return dict.fromkeys(self._converted.keys() | self._data.keys()).keys()
 
     def copy(self) -> LazyConvertDict:
         """Create a copy of the object."""
@@ -239,13 +230,6 @@ class LazyConvertDict:
         """Assign all values in the given dict."""
         for key, value in values.items():
             self[key] = value
-
-    def items(self) -> Iterable[tuple[str, Any]]:
-        """Iterate over (key, value) pairs that this object contains.
-        Computed fields are not included.
-        """
-        for key in self:
-            yield key, self[key]
 
     def get(self, key: str, default: Any | None = None):
         """Get the value for a given key or `default` if it does not

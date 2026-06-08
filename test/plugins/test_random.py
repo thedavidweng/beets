@@ -19,18 +19,12 @@ import random
 
 import pytest
 
-from beets.test.helper import TestHelper
 from beetsplug.random import _equal_chance_permutation, random_objs
 
 
 @pytest.fixture(scope="class")
-def helper():
-    helper = TestHelper()
-    helper.setup_beets()
-
-    yield helper
-
-    helper.teardown_beets()
+def helper(class_helper):
+    return class_helper
 
 
 @pytest.fixture(scope="module", autouse=True)

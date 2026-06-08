@@ -27,7 +27,7 @@ import pytest
 import requests
 
 from beets.library import Item
-from beets.test.helper import PluginMixin, TestHelper
+from beets.test.helper import PluginMixin
 from beets.util.lyrics import Lyrics
 from beetsplug import lyrics
 
@@ -46,13 +46,8 @@ PHRASE_BY_TITLE = {
 
 
 @pytest.fixture(scope="module")
-def helper():
-    helper = TestHelper()
-    helper.setup_beets()
-
-    yield helper
-
-    helper.teardown_beets()
+def helper(module_helper):
+    return module_helper
 
 
 class TestLyricsUtils:

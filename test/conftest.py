@@ -6,7 +6,7 @@ import pytest
 from beets.autotag import Distance
 from beets.dbcore.query import Query
 from beets.test._common import DummyIO
-from beets.test.helper import RUNNING_IN_CI, ConfigMixin
+from beets.test.helper import RUNNING_IN_CI, ConfigMixin, TestHelper
 from beets.test.helper import is_importable as check_import
 from beets.util import cached_classproperty
 
@@ -129,3 +129,21 @@ def is_importable():
     """Fixture that provides a function to check if a module can be imported."""
 
     return check_import
+
+
+@pytest.fixture(scope="session")
+def session_helper():
+    with TestHelper() as helper:
+        yield helper
+
+
+@pytest.fixture(scope="module")
+def module_helper():
+    with TestHelper() as helper:
+        yield helper
+
+
+@pytest.fixture(scope="class")
+def class_helper():
+    with TestHelper() as helper:
+        yield helper

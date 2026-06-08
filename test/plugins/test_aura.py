@@ -7,20 +7,13 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from beets.test.helper import TestHelper
-
 if TYPE_CHECKING:
     from flask.testing import Client
 
 
-@pytest.fixture(scope="module")
-def helper():
-    helper = TestHelper()
-    helper.setup_beets()
-
-    yield helper
-
-    helper.teardown_beets()
+@pytest.fixture(scope="session")
+def helper(session_helper):
+    return session_helper
 
 
 @pytest.fixture(scope="module")

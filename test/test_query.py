@@ -44,7 +44,6 @@ from beets.dbcore.query import (
 )
 from beets.library import Item
 from beets.test import _common
-from beets.test.helper import TestHelper
 
 # Because the absolute path begins with something like C:, we
 # can't disambiguate it from an ordinary query.
@@ -54,13 +53,8 @@ _p = pytest.param
 
 
 @pytest.fixture(scope="class")
-def helper():
-    helper = TestHelper()
-    helper.setup_beets()
-
-    yield helper
-
-    helper.teardown_beets()
+def helper(class_helper):
+    return class_helper
 
 
 class TestGet:

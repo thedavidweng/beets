@@ -7,20 +7,18 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from beets.test.helper import TestHelper
-
 if TYPE_CHECKING:
     from flask.testing import Client
 
 
-@pytest.fixture(scope="module")
-def helper():
-    helper = TestHelper()
-    helper.setup_beets()
+@pytest.fixture(scope="session")
+def helper(session_helper):
+    """Reuse one helper because Aura assertions filter a fixed library.
 
-    yield helper
-
-    helper.teardown_beets()
+    The tests add a target album and a distractor album once, then every API
+    request filters back to the target data instead of requiring an empty DB.
+    """
+    return session_helper
 
 
 @pytest.fixture(scope="module")

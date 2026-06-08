@@ -38,7 +38,7 @@ from enum import Enum
 from functools import cache, cached_property
 from pathlib import Path
 from tempfile import gettempdir, mkdtemp, mkstemp
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 from unittest.mock import Mock, patch
 
 import pytest
@@ -60,7 +60,10 @@ from beets.util import (
 )
 
 if TYPE_CHECKING:
+    from types import TracebackType
+
     from requests_mock.mocker import Mocker
+    from typing_extensions import Self
 
 RUNNING_IN_CI = os.environ.get("GITHUB_ACTIONS") == "true"
 
@@ -170,9 +173,26 @@ class IOMixin(RunMixin):
 class TestHelper(RunMixin, ConfigMixin):
     """Helper mixin for high-level cli and plugin tests.
 
-    This mixin provides methods to isolate beets' global state provide
-    fixtures.
+    This mixin provides methods to isolate beets' global state provide fixtures.
+
+    You may use it as a context manager in pytest fixtures in order to setup
+    tests at a class or module level. See ``module_helper`` and ``class_helper``
+    fixtures, for example.
     """
+
+    def __enter__(self) -> Self:
+        self.setup_beets()
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> Literal[False]:
+        self.teardown_beets()
+        # return False/None to propagate exceptions
+        return False
 
     @pytest.fixture(autouse=True)
     def setup(self):
